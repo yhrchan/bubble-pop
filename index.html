@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bubble Pop 🫧</title>
+  <meta name="description" content="Pop cute bubbles, hearts and kitties with your hands using your camera. Runs in your browser, nothing is uploaded.">
+  <meta name="theme-color" content="#ffd6ec">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Bubble Pop 🫧">
+  <meta property="og:description" content="Pop bubbles, hearts and kitties with your hands. Can you beat my score?">
+  <meta property="og:url" content="https://yhrchan.github.io/bubble-pop/">
+  <meta property="og:image" content="https://yhrchan.github.io/bubble-pop/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AB%A7%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="state-start">
+  <video id="video" playsinline muted autoplay></video>
+  <div id="tint"></div>
+  <canvas id="game" aria-label="Game area"></canvas>
+  <div id="safeTop" aria-hidden="true"></div>
+
+  <p id="hint" class="hint" aria-live="polite" hidden></p>
+
+  <nav class="toolbar" aria-label="Game controls">
+    <button id="btnPause" class="tool" type="button" aria-label="Pause" hidden>⏸</button>
+    <button id="btnBg" class="tool" type="button" aria-label="Hide camera picture" hidden>🪞</button>
+    <button id="btnMute" class="tool" type="button" aria-label="Mute sound">🔊</button>
+    <button id="btnHelp" class="tool" type="button" aria-label="How to play">?</button>
+  </nav>
+
+  <section id="startScreen" class="overlay" aria-labelledby="logo">
+    <div class="card">
+      <h1 id="logo" class="logo">Bubble Pop <span aria-hidden="true">🫧</span></h1>
+      <p class="tagline">Pop bubbles, hearts &amp; kitties with your hands ✨</p>
+      <p id="challenge" class="challenge" hidden></p>
+      <div class="modes" role="radiogroup" aria-label="Game mode">
+        <button class="chip" type="button" role="radio" data-mode="solo" aria-checked="true">💖 Solo</button>
+        <button class="chip" type="button" role="radio" data-mode="duo" aria-checked="false">👯 Bestie Battle</button>
+        <button class="chip" type="button" role="radio" data-mode="chill" aria-checked="false">🛁 Chill</button>
+      </div>
+      <p id="modeDesc" class="mode-desc"></p>
+      <button id="btnCamera" class="btn primary" type="button">📷 Play with camera</button>
+      <button id="btnTouch" class="btn secondary" type="button">👆 Play with touch</button>
+      <p id="startStatus" class="status" role="status"></p>
+      <p id="bestLine" class="best" hidden></p>
+      <p id="inAppWarn" class="warn" hidden>Opened inside Instagram or another app? If the camera won't start, open this link in Safari or Chrome.</p>
+      <p class="privacy">🔒 Your camera stays on your device. Nothing is uploaded.</p>
+    </div>
+  </section>
+
+  <section id="pauseScreen" class="overlay" hidden>
+    <div class="card compact">
+      <h2>Paused</h2>
+      <button id="btnResume" class="btn primary" type="button">💖 Keep popping</button>
+      <button id="btnRestart" class="btn secondary" type="button">🔁 Restart</button>
+      <button id="btnEnd" class="btn secondary" type="button">🏁 End round</button>
+      <button id="btnMenuP" class="btn ghost" type="button">Menu</button>
+    </div>
+  </section>
+
+  <section id="resultsScreen" class="overlay results" hidden>
+    <div class="card">
+      <p id="resHead" class="res-head"></p>
+      <canvas id="resPhoto" class="photo" width="640" height="720" aria-label="Your best moment"></canvas>
+      <p id="resScore" class="res-score"></p>
+      <p id="resSub" class="res-sub"></p>
+      <ul id="resStats" class="stats"></ul>
+      <p id="resGesture" class="gesture-tip" hidden>✌️ Hold a peace sign for a selfie · ✋ Hold up an open hand to play again</p>
+      <div class="row">
+        <button id="btnStory" class="btn primary" type="button">📸 Share story</button>
+        <button id="btnChallenge" class="btn secondary" type="button">💌 Challenge a friend</button>
+      </div>
+      <label id="nameField" class="name-field">Your name on the challenge (optional)
+        <input id="nameInput" maxlength="16" autocomplete="nickname" placeholder="e.g. Mia" enterkeyhint="send">
+      </label>
+      <div class="row">
+        <button id="btnAgain" class="btn secondary" type="button">🔁 Play again</button>
+        <button id="btnMenuR" class="btn ghost" type="button">Menu</button>
+      </div>
+    </div>
+  </section>
+
+  <dialog id="helpDialog" aria-labelledby="helpTitle">
+    <h2 id="helpTitle">How to play 🫧</h2>
+    <ul class="help">
+      <li><b>👆 Poke</b> bubbles with any fingertip. Swipe fast through lots of them for combos.</li>
+      <li><b>💖 Hearts</b> fill your love meter. Big hearts with a bow burst into 3 mini hearts.</li>
+      <li><b>🫶 Heart hands</b> (touch thumbs together and index fingers together) when the meter is full: <b>Love Blast</b> pops everything!</li>
+      <li><b>🌈 Rainbow</b> = double points for 5 seconds. <b>🌙 Moon</b> = dreamy slow-mo. <b>⭐ Stars</b> are fast but worth the most.</li>
+      <li><b>☁️ Grumpy clouds</b> cost points and break your combo. Leave them alone!</li>
+      <li><b>✌️ Peace sign</b> on the results screen takes a selfie for your story card.</li>
+      <li>No camera? Tap or swipe with every finger. Tap the full heart for a Love Blast.</li>
+    </ul>
+    <p class="privacy">Hand tracking runs entirely in your browser with Google's MediaPipe. No video or photos are uploaded.</p>
+    <form method="dialog"><button class="btn primary" type="submit">Got it 💖</button></form>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <pre id="debug" hidden></pre>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
